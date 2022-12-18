@@ -283,7 +283,7 @@
         $shop = Auth::user();
         $request = $shop->api()->rest('GET', '/admin/shop.json');
         // $request = $shop->api()->graph('{ shop { name } }');
-        // print_r($request['body']['shop']);
+        print_r($request['body']);
     @endphp
     <div class="container">
         <div class="row align-items-center justify-content-center">
@@ -292,6 +292,8 @@
                     <div class="file-container">
                         <div class="file-overlay"></div>
                         <div class="file-wrapper">
+                            {{-- <input type="text" name="store" value="{{ $shop }}"> --}}
+                            <input type="hidden" name="token" value="{{ request('token') }}">
                             <input class="file-input" required name="file" id="js-file-input" type="file" />
                             <div class="file-content">
                                 <h1>Upload File To Create Orders</h1>
