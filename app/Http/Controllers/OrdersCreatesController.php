@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Orders_Creates;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use stdClass;
 
@@ -78,27 +79,32 @@ class OrdersCreatesController extends Controller
                         "Quantity" => $quantity
                     )
                 );
-                @$order->customer->first_name = $name;
-                @$order->customer->email = $email;
-                // $order->shipping_address = new stdClass;
-                @$order->shipping_address->first_name = $name;
-                @$order->shipping_address->last_name = $name;
-                @$order->shipping_address->address1 = $billing_adddres;
-                @$order->shipping_address->phone = $phone;
-                @$order->shipping_address->city = $state;
-                @$order->shipping_address->province = $state;
-                @$order->shipping_address->country = $country;
-                @$order->shipping_address->zip = $pincode;
-                // @$order->billing_address = new stdClass;
+                $order->customer = array(
+                    "first_name" => $name,
+                    "email" => $email
+                );
 
-                @$order->billing_address->first_name = $name;
-                @$order->billing_address->last_name = $name;
-                @$order->billing_address->address1 = $billing_adddres;
-                @$order->billing_address->phone = $phone;
-                @$order->billing_address->city = $state;
-                @$order->billing_address->province = $state;
-                @$order->billing_address->country = $country;
-                @$order->billing_address->zip = $pincode;
+
+                $order->shipping_address = array(
+                    "first_name" => $name,
+                    "last_name" => $name,
+                    "address1" => $billing_adddres,
+                    "phone" => $phone,
+                    "city" => $state,
+                    "province" => $state,
+                    "country" => $country,
+                    "zip" => $pincode,
+                );
+                $order->billing_address = array(
+                    "first_name" => $name,
+                    "last_name" => $name,
+                    "address1" => $billing_adddres,
+                    "phone" => $phone,
+                    "city" => $state,
+                    "province" => $state,
+                    "country" => $country,
+                    "zip" => $pincode,
+                );
                 // @$order->shipping_address = $adddres;
                 // @$order->billing_address = $adddres;
                 @$order->payment_gateway_names = [$payment_method];
