@@ -1,5 +1,6 @@
 @extends('shopify-app::layouts.default')
 @section('styles')
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css">
     <style>
         :root {
             --overlay-color: rgba(0, 0, 0, .7);
@@ -33,7 +34,7 @@
             position: fixed;
             width: 100vw;
             height: 100vh;
-            top: 0;
+            top: 50px;
             right: 0;
             bottom: 0;
             left: 0;
@@ -247,6 +248,8 @@
             padding: 12px;
             min-width: 400px;
             width: 30vw;
+            margin-left: -20px;
+            /* max-height: 100px; */
         }
 
         h1 {
@@ -274,27 +277,110 @@
             font-family: "Rubik", sans-serif;
             color: grey;
         }
+
+        /* loader css */
+        .l-container {
+            width: 80px;
+            height: 80px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.3rem;
+            transform: rotate(-45deg);
+        }
+
+        .square {
+            background-color: white;
+            display: grid;
+            place-items: center;
+            border-radius: 5px;
+            animation: load 1.6s ease infinite;
+        }
+
+        @keyframes load {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(0);
+                background-color: var(--color);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .one {
+            --color: magenta;
+        }
+
+        .two {
+            animation-delay: 0.1s;
+            --color: lime;
+        }
+
+
+        .three {
+            animation-delay: 0.2s;
+            --color: blue;
+        }
+
+
+        .four {
+            animation-delay: 0.3s;
+            --color: yellow;
+        }
+
+
+        .five {
+            animation-delay: 0.4s;
+            --color: orange;
+        }
+
+        .loader {
+            z-index: 122;
+            width: 100vw;
+            height: 100vh;
+            background-color: #161313b0;
+        }
     </style>
 @endsection
 @section('content')
+    <div id="loader1" class="d-none align-content-around justify-content-center loader position-fixed row start-0 top-0">
+        <div class="l-container">
+            <div class="square one"></div>
+            <div class="square two"></div>
+            <div class="square three"></div>
+            <div class="square two"></div>
+            <div class="square three"></div>
+            <div class="square four"></div>
+            <div class="square three"></div>
+            <div class="square four"></div>
+            <div class="square five"></div>
+        </div>
+    </div>
     <!-- You are: (shop domain name) -->
     <p>You are: {{ $shopDomain ?? Auth::user()->name }}</p>
     @php
         $shop = Auth::user();
         $request = $shop->api()->rest('GET', '/admin/shop.json');
+        // echo date('d/m/Y h:i:sa');
         // $request = $shop->api()->graph('{ shop { name } }');
-        print_r($request['body']);
+        // print_r($request['body']);
     @endphp
     <div class="container">
+        {{-- <a class="btn position-fixed top-0 end-0 bg-danger m-2" href="{{ route('all_orders') }}">All Orders List</a> --}}
         <div class="row align-items-center justify-content-center">
             <div class="col-8">
                 <form action="{{ route('readcsv') }}" enctype="multipart/form-data" method="post">
                     <div class="file-container">
                         <div class="file-overlay"></div>
                         <div class="file-wrapper">
-                            {{-- <input type="text" name="store" value="{{ $shop }}"> --}}
+
                             <input type="hidden" name="token" value="{{ request('token') }}">
-                            <input class="file-input" required name="file" id="js-file-input" type="file" />
+                            <input class="file-input" required name="file" id="js-file-input" type="file"
+                                onchange="checkfile(this);" />
                             <div class="file-content">
                                 <h1>Upload File To Create Orders</h1>
                                 <h2 class="subheader">Made with ❤️ by ziya zamir </h2>
@@ -309,11 +395,8 @@
                                 <p class="file-name" id="js-file-name">No file selected</p>
                             </div>
 
-                            <div style="width:100%;margin-left:-20px;">
-                                <br><br>
-
-                                <div>&nbsp;</div>
-                                <input type="submit" class="fs-3" value="Submit">
+                            <div style="width:100%;">
+                                <input id="submit" type="submit" class="fs-4 mt-5 p-1 rounded-3" value="Submit">
                             </div>
                         </div>
                     </div>
@@ -325,12 +408,30 @@
 
 @section('scripts')
     @parent
-
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.2.min.js"
+        integrity="sha256-2krYZKh//PcchRtd+H+VyyQoZ/e3EcrkxhM8ycwASPA=" crossorigin="anonymous"></script>
     <script>
+        // new swal("Done", "Orders are created", "success");
+        $("#submit").click(function() {
+            $("#loader1").removeClass("d-none");
+        })
+        // $("#loader1").removeClass("d-none");
         actions.TitleBar.create(app, {
             title: 'Welcome'
         });
 
+        function checkfile(sender) {
+            var validExts = new Array(".xlsx", ".xls", ".csv");
+            var fileExt = sender.value;
+            fileExt = fileExt.substring(fileExt.lastIndexOf('.'));
+            if (validExts.indexOf(fileExt) < 0) {
+                alert("Invalid file selected, valid files are of " +
+                    validExts.toString() + " types.");
+                sender.value = "";
+                return false;
+            } else return true;
+        }
         window.supportDrag = function() {
             let div = document.createElement('div');
             return (('draggable' in div) || ('ondragstart' in div && 'ondrop' in div)) && 'FormData' in
@@ -359,3 +460,8 @@
         }
     </script>
 @endsection
+@if ($message = Session::get('order'))
+    <script>
+        new swal("Done", "Orders are created", "success");
+    </script>
+@endif

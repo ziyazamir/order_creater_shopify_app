@@ -15,12 +15,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get("all_orders", [OrdersCreatesController::class, "all_orders"])->name("all_orders");
+
 Route::get('/', function () {
     return view('welcome');
-})->middleware(['auth.shopify'])->name('home');
+    $shop = $_GET['shop'];
+    echo $shop;
+})->middleware(['verify.shopify'])->name('home');
 
 Route::get('/login', function () {
     return view("login");
 })->name("login");
 
-Route::post("readcsv", [OrdersCreatesController::class, "readcsv"])->middleware(['auth.shopify'])->name("readcsv");
+Route::post("readcsv", [OrdersCreatesController::class, "readcsv"])->middleware(['verify.shopify'])->name("readcsv");
