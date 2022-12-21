@@ -6,6 +6,7 @@ use App\Models\Orders_Creates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use stdClass;
 
 class OrdersCreatesController extends Controller
@@ -30,18 +31,36 @@ class OrdersCreatesController extends Controller
 
         return $data;
     }
+
+    public function test()
+    {
+        return view("welcome")->with("order", "message");
+    }
+
     public function readcsv(Request $request)
     {
         // echo "heelo";
+        // Session::flash(
+        //     'order',
+        //     'This is a message!'
+        // );
+
         $shop = Auth::user();
-        $pr_request = $shop->api()->rest('GET', '/admin/products.json');
-        // $pr_request = $shop->api()->graph('{ shop { name } }');
-        // echo json_encode($pr_request['body']);
-        // json_decode($request['body']);
-        // print_r($request['body']);
-        // die();
-        // print_r($request);
-        // $shop = $request->store;
+        if ($request->file("file")) {
+            $file = $request->file('file');
+            $orderArr = $this->csvToArray($file);
+            foreach ($orderArr as $item) {
+                echo $item['Quantity'];
+                sleep(2);
+            }
+        }
+        Session::flash(
+            'order',
+            'This is a message!'
+        );
+        // $this->middleware(['verify.shopify']);
+        return redirect()->route("test", ["id" => "345"])->with("order", "message");
+        // return view("welcome")->with("order", "message");
         if ($request->file("file")) {
             $file = $request->file('file');
             $orderArr = $this->csvToArray($file);
@@ -76,7 +95,7 @@ class OrdersCreatesController extends Controller
                 $order->line_items = array(
                     array(
                         "variant_id" => $variant_id,
-                        "Quantity" => $quantity
+                        "quantity" => $quantity
                     )
                 );
                 $order->customer = array(
@@ -112,13 +131,9 @@ class OrdersCreatesController extends Controller
                 $data = array(
                     "order" => $order
                 );
-                echo json_encode($data);
-                // die();
-                // $data->order = $order;
-                // $shop = Auth::user();
-                // return $shop;
-                // die();
+
                 $order_request = $shop->api()->rest('POST', 'admin/orders.json', $data);
+
                 $response = $order_request['body'];
                 // $order_request = $shop->api()->rest('POST', '/admin/api/customers/customer.json', ['customer' => "phone:{$phone}"]);
                 // echo json_encode($order_request['body']);
@@ -146,7 +161,7 @@ class OrdersCreatesController extends Controller
                     $transaction_request = $shop->api()->rest('POST', 'admin/orders/' . $succes_order->id . '/transactions.json', $transaction_data);
                     $transaction_resp = $transaction_request['body'];
                     // echo json_encode($transaction_resp);
-                    echo "order created successfully" . "<br>";
+                    // echo "order created successfully" . "<br>";
                 } else {
                     // $order_details->order_id = $succes_order->id;
                     $order_details->status = 0;
@@ -160,7 +175,8 @@ class OrdersCreatesController extends Controller
         } else {
             echo "file not uploaded";
         }
-        return back()->with("order", "success");
+        return
+            view("welcome")->with("order", "message");
         // return redirect()->route("all_orders");
         die();
     }

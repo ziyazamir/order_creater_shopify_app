@@ -28,3 +28,9 @@ Route::get('/login', function () {
 })->name("login");
 
 Route::post("readcsv", [OrdersCreatesController::class, "readcsv"])->middleware(['verify.shopify'])->name("readcsv");
+Route::get("test", function () {
+    return view("test");
+})->name("test");
+Route::get("testing", function () {
+    return back()->with("order", "message");
+})->name("testing");
