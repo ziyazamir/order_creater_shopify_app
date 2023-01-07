@@ -32,10 +32,3 @@ Download All Dependencies
   composer update
 ```
 
-
-## Tech Stack
-
-**Client:** React, Redux, TailwindCSS
-
-**Server:** Node, Express
-
