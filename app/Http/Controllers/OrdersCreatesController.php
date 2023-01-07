@@ -46,20 +46,20 @@ class OrdersCreatesController extends Controller
         // );
 
         $shop = Auth::user();
-        if ($request->file("file")) {
-            $file = $request->file('file');
-            $orderArr = $this->csvToArray($file);
-            foreach ($orderArr as $item) {
-                echo $item['Quantity'];
-                sleep(2);
-            }
-        }
-        Session::flash(
-            'order',
-            'This is a message!'
-        );
+        // if ($request->file("file")) {
+        //     $file = $request->file('file');
+        //     $orderArr = $this->csvToArray($file);
+        //     foreach ($orderArr as $item) {
+        //         echo $item['Quantity'];
+        //         sleep(2);
+        //     }
+        // }
+        // Session::flash(
+        //     'order',
+        //     'This is a message!'
+        // );
         // $this->middleware(['verify.shopify']);
-        return redirect()->route("test", ["id" => "345"])->with("order", "message");
+        // return redirect()->route("test", ["id" => "345"])->with("order", "message");
         // return view("welcome")->with("order", "message");
         if ($request->file("file")) {
             $file = $request->file('file');
@@ -175,9 +175,9 @@ class OrdersCreatesController extends Controller
         } else {
             echo "file not uploaded";
         }
-        return
-            view("welcome")->with("order", "message");
+        // return view("welcome")->with("order", "message");
         // return redirect()->route("all_orders");
+        return redirect()->route("home");
         die();
     }
 

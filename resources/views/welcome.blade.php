@@ -3,6 +3,8 @@
     @extends('shopify-app::layouts.default')
     @section('styles')
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css"
+            integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
         <style>
             :root {
                 --overlay-color: rgba(0, 0, 0, .7);
@@ -376,7 +378,7 @@
             {{-- <a class="btn position-fixed top-0 end-0 bg-danger m-2" href="{{ route('all_orders') }}">All Orders List</a> --}}
             <div class="row align-items-center justify-content-center">
                 <div class="col-8">
-                    <form action="{{ route('readcsv') }}" enctype="multipart/form-data" method="post">
+                    <form id="form" action="{{ route('readcsv') }}" enctype="multipart/form-data" method="post">
                         <div class="file-container">
                             <div class="file-overlay"></div>
                             <div class="file-wrapper">
@@ -428,7 +430,7 @@
         @endif
         <script>
             // new swal("Done", "Orders are created", "success");
-            $("#submit").click(function() {
+            $("#form").submit(function() {
                 $("#loader1").removeClass("d-none");
             })
             // $("#loader1").removeClass("d-none");
